@@ -26,10 +26,12 @@ https://gokosmos.github.io/lool-jool/
 
 ## Где что лежит
 
-- Концепция, решения и открытые вопросы — в репозитории Лаборатории: `docs/architecture.md`
-  (раздел 5 «Lool & Jool»), исходник концепции — `docs/sources/02-lool-and-jool.md`.
-- Системный промпт репетитора — там же: `docs/agents/lool-jool-repetitor-system-prompt.md`.
-  Промпты и методика в этот (открытый) репозиторий не кладём.
+- Системный промпт репетитора: `docs/agents/repetitor-system-prompt.md`. Новые решения по агенту
+  записывай туда (с историей версий).
+- Исходная концепция Lool & Jool без правок: `docs/sources/02-lool-and-jool.md`.
+- Общая архитектура экосистемы — в репозитории Лаборатории: `docs/architecture.md`
+  (раздел 5 «Lool & Jool»). Ключевые решения по Lool & Jool дублируй туда кратко.
+- Репозиторий открытый: всё, что здесь лежит, видно всем.
 - Этот репозиторий — только сайт: React + Vite (`src/`), персонажи — SVG в `src/Characters.jsx`.
 - Деплой на GitHub Pages при каждом изменении `main`: `.github/workflows/deploy-pages.yml`.
 
