@@ -36,18 +36,40 @@ const cards = [
   {topic: 'Сравнение чисел', front: 'Какое число больше: 58 или 85?', back: 'Сравниваем десятки: 8 десятков больше, чем 5.', example: '85 > 58'},
 ];
 
+// twins — похожие задания на ту же тему с другими числами: их дают в «Работе над ошибками»,
+// чтобы ребёнок решал заново, а не вспоминал ответ.
 const questions = [
-  {topic: 'Десятки и единицы', type: 'choice', text: 'Сколько десятков в числе 63?', options: ['3', '6', '63', '9'], answer: '6', hint: 'Десятки — это первая цифра числа.', explain: '63 = 60 + 3, значит, 6 десятков.'},
-  {topic: 'Сложение', type: 'input', text: '34 + 20 = ?', answer: '54', hint: 'Сложи десятки: 30 + 20. А единицы не меняются.', explain: '30 + 20 = 50, и ещё 4 — получается 54.'},
-  {topic: 'Сложение', type: 'choice', text: '38 + 5 = ?', options: ['33', '43', '42', '88'], answer: '43', hint: 'Сначала дополни 38 до 40. Сколько ещё останется прибавить?', explain: '38 + 2 = 40, и ещё 3 — получается 43.'},
-  {topic: 'Вычитание', type: 'input', text: '52 − 7 = ?', answer: '45', hint: 'Вычти сначала 2, чтобы получилось ровно 50.', explain: '52 − 2 = 50, потом 50 − 5 = 45.'},
-  {topic: 'Порядок действий', type: 'choice', text: 'Что делаем первым в примере 20 − (8 + 2)?', options: ['20 − 8', '8 + 2', 'Всё равно'], answer: '8 + 2', hint: 'Скобки — как дверь, в которую заходят первыми.', explain: 'Сначала скобки: 8 + 2 = 10, потом 20 − 10 = 10.'},
-  {topic: 'Проверка', type: 'choice', text: 'Каким действием проверить, что 45 + 17 = 62?', options: ['62 + 17', '62 − 17', '45 − 17'], answer: '62 − 17', hint: 'Если из суммы убрать одно слагаемое, что останется?', explain: '62 − 17 = 45 — получили другое слагаемое, значит, сложили верно.'},
-  {topic: 'Задачи', type: 'input', text: 'В классе 25 ребят. 8 ушли на кружок. Сколько ребят осталось в классе?', answer: '17', hint: 'Ребят стало меньше — значит, нужно вычитать.', explain: '25 − 8 = 17. В классе осталось 17 ребят.'},
-  {topic: 'Сравнение чисел', type: 'choice', text: 'Какой знак поставить: 47 … 74', options: ['<', '>', '='], answer: '<', hint: 'Сначала сравни десятки: 4 и 7.', explain: '4 десятка меньше, чем 7 десятков, значит, 47 < 74.'},
+  {topic: 'Десятки и единицы', type: 'choice', text: 'Сколько десятков в числе 63?', options: ['3', '6', '63', '9'], answer: '6', hint: 'Десятки — это первая цифра числа.', explain: '63 = 60 + 3, значит, 6 десятков.', twins: [
+    {text: 'Сколько десятков в числе 48?', options: ['8', '4', '48', '12'], answer: '4', hint: 'Десятки — это первая цифра числа.', explain: '48 = 40 + 8, значит, 4 десятка.'},
+    {text: 'Сколько десятков в числе 75?', options: ['5', '12', '75', '7'], answer: '7', hint: 'Десятки — это первая цифра числа.', explain: '75 = 70 + 5, значит, 7 десятков.'}]},
+  {topic: 'Сложение', type: 'input', text: '34 + 20 = ?', answer: '54', hint: 'Сложи десятки: 30 + 20. А единицы не меняются.', explain: '30 + 20 = 50, и ещё 4 — получается 54.', twins: [
+    {text: '45 + 30 = ?', answer: '75', hint: 'Сложи десятки: 40 + 30. А единицы не меняются.', explain: '40 + 30 = 70, и ещё 5 — получается 75.'},
+    {text: '26 + 40 = ?', answer: '66', hint: 'Сложи десятки: 20 + 40. А единицы не меняются.', explain: '20 + 40 = 60, и ещё 6 — получается 66.'}]},
+  {topic: 'Сложение', type: 'choice', text: '38 + 5 = ?', options: ['33', '43', '42', '88'], answer: '43', hint: 'Сначала дополни 38 до 40. Сколько ещё останется прибавить?', explain: '38 + 2 = 40, и ещё 3 — получается 43.', twins: [
+    {text: '47 + 6 = ?', options: ['41', '53', '52', '107'], answer: '53', hint: 'Сначала дополни 47 до 50. Сколько ещё останется прибавить?', explain: '47 + 3 = 50, и ещё 3 — получается 53.'},
+    {text: '29 + 4 = ?', options: ['32', '25', '33', '69'], answer: '33', hint: 'Сначала дополни 29 до 30. Сколько ещё останется прибавить?', explain: '29 + 1 = 30, и ещё 3 — получается 33.'}]},
+  {topic: 'Вычитание', type: 'input', text: '52 − 7 = ?', answer: '45', hint: 'Вычти сначала 2, чтобы получилось ровно 50.', explain: '52 − 2 = 50, потом 50 − 5 = 45.', twins: [
+    {text: '43 − 6 = ?', answer: '37', hint: 'Вычти сначала 3, чтобы получилось ровно 40.', explain: '43 − 3 = 40, потом 40 − 3 = 37.'},
+    {text: '61 − 4 = ?', answer: '57', hint: 'Вычти сначала 1, чтобы получилось ровно 60.', explain: '61 − 1 = 60, потом 60 − 3 = 57.'}]},
+  {topic: 'Порядок действий', type: 'choice', text: 'Что делаем первым в примере 20 − (8 + 2)?', options: ['20 − 8', '8 + 2', 'Всё равно'], answer: '8 + 2', hint: 'Скобки — как дверь, в которую заходят первыми.', explain: 'Сначала скобки: 8 + 2 = 10, потом 20 − 10 = 10.', twins: [
+    {text: 'Что делаем первым в примере 15 + (10 − 4)?', options: ['15 + 10', '10 − 4', 'Всё равно'], answer: '10 − 4', hint: 'Скобки — как дверь, в которую заходят первыми.', explain: 'Сначала скобки: 10 − 4 = 6, потом 15 + 6 = 21.'},
+    {text: 'Что делаем первым в примере 40 − (12 + 8)?', options: ['12 + 8', '40 − 12', 'Всё равно'], answer: '12 + 8', hint: 'Скобки — как дверь, в которую заходят первыми.', explain: 'Сначала скобки: 12 + 8 = 20, потом 40 − 20 = 20.'}]},
+  {topic: 'Проверка', type: 'choice', text: 'Каким действием проверить, что 45 + 17 = 62?', options: ['62 + 17', '62 − 17', '45 − 17'], answer: '62 − 17', hint: 'Если из суммы убрать одно слагаемое, что останется?', explain: '62 − 17 = 45 — получили другое слагаемое, значит, сложили верно.', twins: [
+    {text: 'Каким действием проверить, что 36 + 25 = 61?', options: ['61 + 25', '36 − 25', '61 − 25'], answer: '61 − 25', hint: 'Если из суммы убрать одно слагаемое, что останется?', explain: '61 − 25 = 36 — получили другое слагаемое, значит, сложили верно.'},
+    {text: 'Каким действием проверить, что 28 + 14 = 42?', options: ['42 − 14', '42 + 14', '28 − 14'], answer: '42 − 14', hint: 'Если из суммы убрать одно слагаемое, что останется?', explain: '42 − 14 = 28 — получили другое слагаемое, значит, сложили верно.'}]},
+  {topic: 'Задачи', type: 'input', text: 'В классе 25 ребят. 8 ушли на кружок. Сколько ребят осталось в классе?', answer: '17', hint: 'Ребят стало меньше — значит, нужно вычитать.', explain: '25 − 8 = 17. В классе осталось 17 ребят.', twins: [
+    {text: 'На полке 32 книги. 9 книг взяли почитать. Сколько книг осталось на полке?', answer: '23', hint: 'Книг стало меньше — значит, нужно вычитать.', explain: '32 − 9 = 23. На полке осталось 23 книги.'},
+    {text: 'У Маши 18 наклеек. Ей подарили ещё 7. Сколько наклеек стало у Маши?', answer: '25', hint: 'Наклеек стало больше — значит, нужно складывать.', explain: '18 + 7 = 25. У Маши стало 25 наклеек.'}]},
+  {topic: 'Сравнение чисел', type: 'choice', text: 'Какой знак поставить: 47 … 74', options: ['<', '>', '='], answer: '<', hint: 'Сначала сравни десятки: 4 и 7.', explain: '4 десятка меньше, чем 7 десятков, значит, 47 < 74.', twins: [
+    {text: 'Какой знак поставить: 56 … 65', options: ['<', '>', '='], answer: '<', hint: 'Сначала сравни десятки: 5 и 6.', explain: '5 десятков меньше, чем 6 десятков, значит, 56 < 65.'},
+    {text: 'Какой знак поставить: 83 … 38', options: ['<', '>', '='], answer: '>', hint: 'Сначала сравни десятки: 8 и 3.', explain: '8 десятков больше, чем 3 десятка, значит, 83 > 38.'}]},
 ];
 
 const testTopics = [...new Set(questions.map(q => q.topic))];
+const fullRound = questions.map((_, qi) => ({qi, v: 0}));
+// v = 0 — исходное задание, 1, 2… — близнецы; в каждом новом круге берём следующего близнеца.
+const variant = ({qi, v}) => v ? {...questions[qi], ...questions[qi].twins[v - 1]} : questions[qi];
+const nextVariant = ({qi, v}) => ({qi, v: v % questions[qi].twins.length + 1});
 const lower = (list) => list.join(', ').toLowerCase();
 
 function Header({progress, total, stars, label}) {
@@ -136,7 +158,7 @@ function Result({results, hintsUsed, fixing, onRestart, onFix, onCards, onMemo})
   const topics = testTopics.filter(t => results.some(r => r.topic === t));
   const hard = topics.filter(t => results.some(r => r.topic === t && r.status !== 'first'));
   const easy = topics.filter(t => !hard.includes(t));
-  const mistakes = results.filter(r => r.status !== 'first').map(r => r.qi);
+  const mistakes = results.filter(r => r.status !== 'first').map(nextVariant);
   const headline = fixing && first === total ? 'Все ошибки исправлены!'
     : first === total ? 'Всё получилось с первого раза!'
     : first + second === total ? 'Всё решено!'
@@ -195,30 +217,30 @@ function Test({onCards, onMemo}) {
   const [tried, setTried] = useState([]);
   const [hint, setHint] = useState(false);
   const [input, setInput] = useState('');
-  const [results, setResults] = useState([]); // {qi, topic, text, status: first | second | missed}
+  const [results, setResults] = useState([]); // {qi, v, topic, text, status: first | second | missed}
   const [hintsUsed, setHintsUsed] = useState(0);
-  const [round, setRound] = useState(questions.map((_, i) => i)); // номера заданий текущего круга
-  const fixing = round.length < questions.length;
-  const qi = round[idx];
-  const q = questions[qi];
+  const [round, setRound] = useState(fullRound); // задания текущего круга: {qi, v}
+  const [fixing, setFixing] = useState(false);
+  const {qi, v} = round[idx] || {};
+  const q = round[idx] && variant(round[idx]);
   const stars = results.filter(r => r.status === 'first').length;
 
   const check = (value) => {
-    const v = String(value).trim();
-    if (!v || status === 'right' || status === 'shown') return;
-    if (v === q.answer) {
+    const a = String(value).trim();
+    if (!a || status === 'right' || status === 'shown') return;
+    if (a === q.answer) {
       setStatus('right');
-      setResults(r => [...r, {qi, topic: q.topic, text: q.text, status: tried.length === 0 ? 'first' : 'second'}]);
+      setResults(r => [...r, {qi, v, topic: q.topic, text: q.text, status: tried.length === 0 ? 'first' : 'second'}]);
     } else if (tried.length === 0) {
-      setTried([v]); setStatus('wrong');
+      setTried([a]); setStatus('wrong');
       if (!hint) {setHint(true); setHintsUsed(h => h + 1);}
     } else {
-      setTried(t => [...t, v]); setStatus('shown');
-      setResults(r => [...r, {qi, topic: q.topic, text: q.text, status: 'missed'}]);
+      setTried(t => [...t, a]); setStatus('shown');
+      setResults(r => [...r, {qi, v, topic: q.topic, text: q.text, status: 'missed'}]);
     }
   };
   const next = () => {setIdx(i => i + 1); setStatus('idle'); setTried([]); setHint(false); setInput('');};
-  const restart = (list = questions.map((_, i) => i)) => {setRound(list); setIdx(0); setResults([]); setHintsUsed(0); setStatus('idle'); setTried([]); setHint(false); setInput('');};
+  const restart = (list = fullRound, fix = false) => {setRound(list); setFixing(fix); setIdx(0); setResults([]); setHintsUsed(0); setStatus('idle'); setTried([]); setHint(false); setInput('');};
   const finished = status === 'right' || status === 'shown';
 
   if (!started) return <>
@@ -234,7 +256,7 @@ function Test({onCards, onMemo}) {
     </div>
   </>;
 
-  if (idx >= round.length) return <Result results={results} hintsUsed={hintsUsed} fixing={fixing} onRestart={() => restart()} onFix={restart} onCards={onCards} onMemo={onMemo}/>;
+  if (idx >= round.length) return <Result results={results} hintsUsed={hintsUsed} fixing={fixing} onRestart={() => restart()} onFix={list => restart(list, true)} onCards={onCards} onMemo={onMemo}/>;
 
   const optionClass = (o) => finished && o === q.answer ? 'right' : tried.includes(o) ? 'wrong' : '';
   return <>
@@ -244,6 +266,7 @@ function Test({onCards, onMemo}) {
         <span className="chip">{idx + 1}. {q.topic}</span>
         <button className="hint-btn" onClick={() => {if (!hint) setHintsUsed(h => h + 1); setHint(true);}} disabled={hint}><Lightbulb size={16}/> Подсказка</button>
       </div>
+      {fixing && idx === 0 && status === 'idle' && <div className="focus-note"><Wrench size={16}/> Похожие задания на те же темы — с другими числами.</div>}
       {hint && <div className="hint-box"><Lightbulb size={16}/> {q.hint}</div>}
       <h3 className="question-text">{q.text}</h3>
       {q.type === 'choice'
