@@ -1,8 +1,10 @@
-import React from 'react';
+import React, {useState} from 'react';
 import {createRoot} from 'react-dom/client';
-import {Heart, Sparkles, Hammer, ShieldCheck, Eye, Clock, Lock, MessageCircleHeart, ArrowRight, Lightbulb, Footprints, HandHeart, Compass} from 'lucide-react';
+import {Heart, Sparkles, Hammer, ShieldCheck, Eye, Clock, Lock, MessageCircleHeart, ArrowRight, Lightbulb, Footprints, HandHeart, Compass, Map as MapIcon, GraduationCap, Layers, ListChecks, Trophy} from 'lucide-react';
 import {Sloth, Monkey} from './Characters.jsx';
 import TutorDemo from './TutorDemo.jsx';
+import KnowledgePath from './KnowledgePath.jsx';
+import ExamPrep from './ExamPrep.jsx';
 import './style.css';
 
 const whales = [
@@ -18,6 +20,29 @@ const steps = [
   {icon: HandHeart, title: 'Ребёнок решает сам', text: 'И объясняет, как у него получилось. Родитель получает короткий отчёт.'},
 ];
 
+const formats = [
+  {id: 'homework', icon: MessageCircleHeart, title: 'Помощь с домашкой', short: 'Подводим к ответу, а не решаем',
+    headline: 'Репетитор, который не решает за ребёнка',
+    text: 'Попробуйте сами: выберите предмет и отвечайте за ребёнка. Нажмите «Просто скажи ответ» — и посмотрите, что сделает герой.',
+    steps},
+  {id: 'path', icon: MapIcon, title: 'Путь знаний', short: 'Урок в день по программе класса',
+    headline: 'Каждый день — маленький шаг',
+    text: 'Карта тем своего класса. Короткие уроки по 7–15 минут ведут герои, а Джул ведёт по пути и помогает заметить, сколько уже пройдено.',
+    steps: [
+      {icon: Compass, title: 'Джул прокладывает путь', text: 'Темы идут по школьной программе — от простого к сложному.'},
+      {icon: Footprints, title: 'Урок на 10 минут', text: 'Коротко и без перегруза. Цель на неделю задаёт родитель.'},
+      {icon: Trophy, title: 'Видно, сколько пройдено', text: 'Без гонки и штрафов за пропуски — только радость от пути.'},
+    ]},
+  {id: 'exam', icon: GraduationCap, title: 'Подготовка к контрольной', short: 'Карточки и интерактивный тест',
+    headline: 'Контрольная без страха',
+    text: 'Сначала обучающие карточки по теме, потом тест с подсказками. Ошибка — не минус, а повод разобраться.',
+    steps: [
+      {icon: Layers, title: 'Карточки по теме', text: 'Вопрос — подумай — переверни. Что непонятно, вернётся ещё раз.'},
+      {icon: ListChecks, title: 'Интерактивный тест', text: 'Разные задания: выбрать ответ, вписать число. Подсказка — по кнопке.'},
+      {icon: Lightbulb, title: 'Вторая попытка', text: 'Ошибка — это подсказка и ещё одна попытка. В конце видно, что повторить.'},
+    ]},
+];
+
 const parents = [
   {icon: ShieldCheck, title: 'Безопасные темы', text: 'Только учёба и добрые игры. Неподходящие темы помощник мягко обходит и возвращает к заданию.'},
   {icon: Eye, title: 'Вы видите всё', text: 'Аккаунт родителя, внутри — профиль ребёнка. Отчёт после каждого занятия: что получилось и что повторить.'},
@@ -26,6 +51,8 @@ const parents = [
 ];
 
 function App() {
+  const [format, setFormat] = useState('homework');
+  const current = formats.find(f => f.id === format);
   return <div className="lj">
     <header className="lj-header">
       <a className="lj-logo" href="#top" aria-label="Lool & Jool — наверх"><span>Lool</span><i>&amp;</i><span>Jool</span></a>
@@ -101,16 +128,24 @@ function App() {
         </div>
       </section>
 
-      <section className="tutor-section" id="tutor">
-        <div className="tutor-intro">
-          <span className="pill">Первый помощник</span>
-          <h2 className="section-title left">Репетитор, который<br/>не решает за ребёнка</h2>
-          <p>Попробуйте сами: выберите предмет и отвечайте за ребёнка. Нажмите «Просто скажи ответ» — и посмотрите, что сделает помощник.</p>
-          <ol className="how">
-            {steps.map(({icon: Icon, title, text}) => <li key={title}><span className="how-icon"><Icon size={20}/></span><div><b>{title}</b><p>{text}</p></div></li>)}
-          </ol>
+      <section className="formats" id="tutor">
+        <span className="pill">Три способа учиться</span>
+        <h2 className="section-title">Учимся так, как удобно ребёнку</h2>
+        <div className="format-tabs" role="tablist" aria-label="Формат обучения">
+          {formats.map(({id, icon: Icon, title, short}) => <button key={id} role="tab" aria-selected={format === id} className={`format-tab ${format === id ? 'on' : ''}`} onClick={() => setFormat(id)}>
+            <Icon size={22}/><span><b>{title}</b><small>{short}</small></span>
+          </button>)}
         </div>
-        <TutorDemo/>
+        <div className="format-body">
+          <div className="tutor-intro">
+            <h3 className="format-title">{current.headline}</h3>
+            <p>{current.text}</p>
+            <ol className="how">
+              {current.steps.map(({icon: Icon, title, text}) => <li key={title}><span className="how-icon"><Icon size={20}/></span><div><b>{title}</b><p>{text}</p></div></li>)}
+            </ol>
+          </div>
+          {format === 'homework' ? <TutorDemo/> : format === 'path' ? <KnowledgePath/> : <ExamPrep/>}
+        </div>
       </section>
 
       <section className="parents" id="parents">
