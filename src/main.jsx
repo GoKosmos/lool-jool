@@ -1,11 +1,12 @@
 import React, {useState} from 'react';
 import {createRoot} from 'react-dom/client';
-import {Heart, Sparkles, Hammer, ShieldCheck, Eye, Clock, Lock, MessageCircleHeart, ArrowRight, Lightbulb, Footprints, HandHeart, Compass, Map as MapIcon, GraduationCap, Layers, ListChecks, Trophy} from 'lucide-react';
+import {Heart, Sparkles, Hammer, ShieldCheck, Eye, Clock, Lock, MessageCircleHeart, ArrowRight, Lightbulb, Footprints, HandHeart, Compass, Map as MapIcon, GraduationCap, Layers, ListChecks, Trophy, Smartphone, Sprout} from 'lucide-react';
 import {Sloth, Monkey} from './Characters.jsx';
 import TutorDemo from './TutorDemo.jsx';
 import KnowledgePath from './KnowledgePath.jsx';
 import ExamPrep from './ExamPrep.jsx';
 import Cabinets from './Cabinets.jsx';
+import PlannerDemo from './Planner.jsx';
 import './style.css';
 
 const whales = [
@@ -59,6 +60,7 @@ function App() {
       <a className="lj-logo" href="#top" aria-label="Lool & Jool — наверх"><span>Lool</span><i>&amp;</i><span>Jool</span></a>
       <nav>
         <a href="#tutor">Репетитор</a>
+        <a href="#planner">Планер</a>
         <a href="#cabinet">Кабинеты</a>
         <a href="#parents">Родителям</a>
         <a href="#toys">Игрушки</a>
@@ -147,6 +149,22 @@ function App() {
             </ol>
           </div>
           {format === 'homework' ? <TutorDemo/> : format === 'path' ? <KnowledgePath/> : <ExamPrep/>}
+        </div>
+      </section>
+
+      <section className="cabinets" id="planner">
+        <span className="pill">Планер дел</span>
+        <h2 className="section-title">Сначала дела — потом телефон</h2>
+        <div className="cab-intro">
+          <div className="cab-intro-text">
+            <p>Телефон ребёнок не выпрашивает, а зарабатывает сам: за каждое сделанное дело — минуты игры. Так экранное время становится не спором, а договором, и растёт самостоятельность.</p>
+            <ul className="how">
+              <li><span className="how-icon"><ListChecks size={20}/></span><div><b>Планер составляете вместе</b><p>Пять сфер: обучение, творчество, физическое развитие, личная гигиена, семейные дела. Система предлагает примеры — дела и минуты выбираете вы с ребёнком.</p></div></li>
+              <li><span className="how-icon"><Smartphone size={20}/></span><div><b>Дело — это минуты</b><p>Ребёнок отмечает сделанное и видит, сколько заработал. Но не больше 2 часов в день — даже если дел много.</p></div></li>
+              <li><span className="how-icon"><Sprout size={20}/></span><div><b>Растим самостоятельность</b><p>Бонус за дело без напоминания. Можно включить подтверждение родителем. Не сделал — не штраф: завтра новый день.</p></div></li>
+            </ul>
+          </div>
+          <PlannerDemo/>
         </div>
       </section>
 
