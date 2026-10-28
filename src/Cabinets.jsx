@@ -1,6 +1,7 @@
 import React, {useState} from 'react';
 import {Lock, Compass, ArrowLeft, Plus, Star, ShieldCheck, Settings, ClipboardList, ThumbsUp, Target, Heart, CalendarCheck, Clock, Lightbulb, Sparkles, Send, Check, BookOpen} from 'lucide-react';
 import {Sloth, Monkey} from './Characters.jsx';
+import {GoalChild, GoalParent, goalReminder} from './Goals.jsx';
 
 // Личные кабинеты (демо на заготовленных данных).
 // Один аккаунт на семью — почта родителя, общий вход во всю Вселенную (Lool & Jool, Лаборатория Счастья).
@@ -45,6 +46,10 @@ const demoChildren = [
       {time: '16:25', format: 'Подготовка к контрольной', topic: 'Сложение и вычитание до 100', note: 'тест: верно 6 из 8, работа над ошибками — 3 из 3'},
     ], summary: 'Миша прошёл урок о сложении с переходом через десяток и тест к контрольной. Вычитание с переходом сначала давалось трудно, но после подсказки «дойди до круглого числа» Миша решил похожие задания сам.'},
     plan: {days: 4, subjects: ['math', 'russian', 'reading', 'world'], extras: ['eq']},
+    goal: {title: 'Пятёрка в четверти по математике', weeks: 9, week: 3, reward: 'Велосипед', remind: 'в начале каждого занятия', done: false, minis: [
+      {id: 1, title: '7 дней занятий подряд', total: 7, cur: 5, done: false, reward: 'Поход в зоопарк'},
+      {id: 2, title: 'Все задания теста к контрольной — с первой попытки', total: 1, cur: 0, done: false, reward: 'Любимый торт'},
+      {id: 3, title: 'Пройти 5 уроков на пути знаний', total: 5, cur: 5, done: true, reward: 'Кино всей семьёй'}]},
     week: {minutes: [12, 15, 0, 18, 22, 0, 0],
       good: ['Десятки и единицы', 'Порядок действий', 'Задачи в одно действие'],
       work: ['Вычитание с переходом через десяток', 'Сравнение чисел'],
@@ -102,8 +107,10 @@ function ChildRoom({child, tasks, onBack}) {
     <div className="cab-hello">
       <span className={`cab-ava ${child.hero}`}><Avatar hero={child.hero}/></span>
       <div><h3>Привет, {child.name}!</h3>
-        <p className="cab-jool"><Compass size={16}/> Джул: «Продолжим путь? Сегодня — короткий урок, всего 10 минут»</p></div>
+        <p className="cab-jool"><Compass size={16}/> Джул: «{goalReminder(child.goal) || 'Продолжим путь? Сегодня — короткий урок, всего 10 минут'}»</p></div>
     </div>
+
+    <GoalChild goal={child.goal}/>
 
     {mine.length > 0 && <div className="cab-block tasks">
       <b><Send size={16}/> {mine.length > 1 ? 'Задания от родителя' : 'Задание от родителя'}</b>
@@ -275,7 +282,7 @@ function LoadSettings({c, onPlan}) {
   </div>;
 }
 
-function ParentRoom({children, tasks, onAddTask, onAddChild, onPlan, onBack}) {
+function ParentRoom({children, tasks, onAddTask, onAddChild, onPlan, onGoal, onBack}) {
   const [cid, setCid] = useState(children[0].id);
   const [period, setPeriod] = useState('today');
   const [adding, setAdding] = useState(false);
@@ -315,6 +322,8 @@ function ParentRoom({children, tasks, onAddTask, onAddChild, onPlan, onBack}) {
       <small>Задание появится в кабинете ребёнка.</small>
     </div>
 
+    <GoalParent key={c.id} child={c} onGoal={onGoal}/>
+
     <LoadSettings c={c} onPlan={onPlan}/>
 
     <div className="cab-grid">
@@ -330,6 +339,7 @@ export default function Cabinets() {
   const [children, setChildren] = useState(demoChildren);
   const [tasks, setTasks] = useState([{id: 1, child: 'misha', text: 'Подготовиться к контрольной по сложению и вычитанию', due: 'пятницы'}]);
   const [view, setView] = useState({mode: 'pick'});
+  const setGoal = (id, goal) => setChildren(list => list.map(c => c.id === id ? {...c, goal} : c));
   const setPlan = (id, plan) => setChildren(list => list.map(c => c.id === id ? {...c, plan} : c));
   const addTask = (t) => setTasks(list => [...list, {...t, id: Date.now()}]);
   const addChild = (name, grade) => {
@@ -344,7 +354,7 @@ export default function Cabinets() {
     {view.mode === 'pick' && <Picker children={children} onChild={id => setView({mode: 'child', id})} onParent={() => setView({mode: 'pin'})}/>}
     {view.mode === 'child' && <ChildRoom child={children.find(c => c.id === view.id)} tasks={tasks} onBack={() => setView({mode: 'pick'})}/>}
     {view.mode === 'pin' && <PinGate onOk={() => setView({mode: 'parent'})} onBack={() => setView({mode: 'pick'})}/>}
-    {view.mode === 'parent' && <ParentRoom children={children} tasks={tasks} onAddTask={addTask} onAddChild={addChild} onPlan={setPlan} onBack={() => setView({mode: 'pick'})}/>}
+    {view.mode === 'parent' && <ParentRoom children={children} tasks={tasks} onAddTask={addTask} onAddChild={addChild} onPlan={setPlan} onGoal={setGoal} onBack={() => setView({mode: 'pick'})}/>}
     <small className="tutor-note">Демонстрация · данные для примера</small>
   </div>;
 }
