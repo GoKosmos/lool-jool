@@ -1,5 +1,5 @@
 import React, {useState} from 'react';
-import {Gift, Flag, Check, Plus, X, Pencil, Trophy, Bell, PartyPopper} from 'lucide-react';
+import {Gift, Flag, Check, Plus, X, Pencil, Trophy, Bell, PartyPopper, Lightbulb} from 'lucide-react';
 
 // Цель-желание: большая цель со сроком пути, мини-цели на пути к ней и награды.
 // Родитель задаёт цели в своём кабинете (система предлагает варианты, можно вписать свои),
@@ -118,6 +118,15 @@ function GoalEditor({initial, onSave, onCancel}) {
     <div className="ge-step">
       <span className="ge-num">3</span>
       <div><b>Награды — выберите вместе с ребёнком</b>
+        <div className="ge-tip">
+          <b><Lightbulb size={15}/> Подсказка: как наградам не перебить интерес к учёбе</b>
+          <ul>
+            <li>Награда — приятный бонус, а не «цена» за оценку. Иначе ребёнок начинает учиться ради подарка, а не ради «я понял».</li>
+            <li>Лучше работают мини-цели про старание: занятия, работа над ошибками, «объясни сам», — их ребёнок может выполнить своими силами.</li>
+            <li>Впечатления вместе — зоопарк, кино, торт с семьёй — часто ценнее вещей и укрепляют связь.</li>
+            <li>Хвалите за усилия и путь: «ты не опускаешь руки», «у тебя получилось разобраться», — даже если большая цель пока не достигнута.</li>
+          </ul>
+        </div>
         <label className="ge-reward big"><span><Trophy size={16}/> За большую цель</span>
           <input value={reward} onChange={e => setReward(e.target.value)} placeholder="Например: велосипед" aria-label="Награда за большую цель"/>
         </label>

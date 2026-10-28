@@ -624,3 +624,7 @@ button.subj:hover { border-color: #1f1a3d; }
 .ge-actions { display: flex; gap: 8px; flex-wrap: wrap; }
 .ge-hint { color: var(--ink-soft); font-size: 13px; }
 @media (max-width: 640px) { .goal-minis.parent li { grid-template-columns: 1fr; } .goal-mark { grid-column: 1; grid-row: auto; justify-self: start; } }
+.ge-tip { display: grid; gap: 6px; padding: 10px 14px; border-radius: 14px; background: #fff8dc; border: 2px dashed #e0b400; color: #4d3a00; font-size: 13.5px; }
+.ge-tip b { display: flex; align-items: center; gap: 6px; font-size: 14px; color: var(--ink); }
+.ge-tip b svg { flex: none; color: #c08a00; }
+.ge-tip ul { margin: 0; padding-left: 18px; display: grid; gap: 3px; }
