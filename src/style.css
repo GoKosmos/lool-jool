@@ -616,8 +616,6 @@ button.subj:hover { border-color: #1f1a3d; }
 .ge-own { display: flex; gap: 8px; flex-wrap: wrap; }
 .ge-own input { flex: 1 1 180px; }
 .ge-own .lj-btn, .ge-actions .lj-btn { padding: 9px 16px; font-size: 14px; }
-.ge-reward { display: grid; gap: 6px; font-size: 14px; font-weight: 700; }
-.ge-reward svg { display: inline; vertical-align: -2px; color: var(--accent); }
 .ge-mini { display: grid; gap: 6px; padding: 10px 12px; border-radius: 14px; background: #fff; border: 1.5px solid #1f1a3d; }
 .ge-mini-top { display: flex; justify-content: space-between; gap: 8px; font-size: 14px; font-weight: 600; }
 .ge-mini-top button { color: var(--ink-soft); }
@@ -628,3 +626,9 @@ button.subj:hover { border-color: #1f1a3d; }
 .ge-tip b { display: flex; align-items: center; gap: 6px; font-size: 14px; color: var(--ink); }
 .ge-tip b svg { flex: none; color: #c08a00; }
 .ge-tip ul { margin: 0; padding-left: 18px; display: grid; gap: 3px; }
+.ge-reward-box { display: grid; gap: 6px; padding: 10px 12px; border-radius: 14px; background: #fff; border: 1.5px solid #1f1a3d; }
+.ge-reward-label { display: flex; align-items: center; gap: 6px; font-size: 14px; font-weight: 700; }
+.ge-reward-label svg { flex: none; color: var(--accent); }
+.ge-reward-label.small { font-size: 13px; color: var(--ink-soft); }
+.ge-mini-top span { display: flex; align-items: center; gap: 6px; }
+.ge-mini-top span svg { flex: none; color: var(--accent); }

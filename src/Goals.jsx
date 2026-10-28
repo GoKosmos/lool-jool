@@ -100,24 +100,6 @@ function GoalEditor({initial, onSave, onCancel}) {
         <label className="ge-inline">Срок пути:
           <select value={weeks} onChange={e => setWeeks(+e.target.value)}>{durations.map(d => <option key={d.weeks} value={d.weeks}>{d.title}</option>)}</select>
         </label>
-      </div>
-    </div>
-
-    <div className="ge-step">
-      <span className="ge-num">2</span>
-      <div><b>Мини-цели на пути</b>
-        <small>Система предлагает цели, которые может посчитать сама. Можно добавить свою.</small>
-        <div className="goal-ideas">{miniIdeas.map(i => <button type="button" key={i.title} className={has(i.title) ? 'on' : ''} disabled={has(i.title)} onClick={() => addMini(i.title, i.total)}>{has(i.title) ? <Check size={13}/> : <Plus size={13}/>} {i.title}</button>)}</div>
-        <div className="ge-own">
-          <input value={own} onChange={e => setOwn(e.target.value)} placeholder="Своя мини-цель" aria-label="Своя мини-цель"/>
-          <button type="button" className="lj-btn ghost" disabled={!own.trim()} onClick={() => {addMini(own.trim()); setOwn('');}}><Plus size={15}/> Добавить</button>
-        </div>
-      </div>
-    </div>
-
-    <div className="ge-step">
-      <span className="ge-num">3</span>
-      <div><b>Награды — выберите вместе с ребёнком</b>
         <div className="ge-tip">
           <b><Lightbulb size={15}/> Подсказка: как наградам не перебить интерес к учёбе</b>
           <ul>
@@ -127,26 +109,46 @@ function GoalEditor({initial, onSave, onCancel}) {
             <li>Хвалите за усилия и путь: «ты не опускаешь руки», «у тебя получилось разобраться», — даже если большая цель пока не достигнута.</li>
           </ul>
         </div>
-        <label className="ge-reward big"><span><Trophy size={16}/> За большую цель</span>
+        <div className="ge-reward-box">
+          <span className="ge-reward-label"><Trophy size={16}/> Награда за большую цель — выберите вместе с ребёнком</span>
           <input value={reward} onChange={e => setReward(e.target.value)} placeholder="Например: велосипед" aria-label="Награда за большую цель"/>
-        </label>
-        <Chips items={bigRewardIdeas} onPick={setReward}/>
+          <Chips items={bigRewardIdeas} onPick={setReward}/>
+        </div>
+      </div>
+    </div>
+
+    <div className="ge-step">
+      <span className="ge-num">2</span>
+      <div><b>Мини-цели на пути — и награда за каждую</b>
+        <small>Система предлагает цели, которые может посчитать сама. Можно добавить свою.</small>
+        <div className="goal-ideas">{miniIdeas.map(i => <button type="button" key={i.title} className={has(i.title) ? 'on' : ''} disabled={has(i.title)} onClick={() => addMini(i.title, i.total)}>{has(i.title) ? <Check size={13}/> : <Plus size={13}/>} {i.title}</button>)}</div>
+        <div className="ge-own">
+          <input value={own} onChange={e => setOwn(e.target.value)} placeholder="Своя мини-цель" aria-label="Своя мини-цель"/>
+          <button type="button" className="lj-btn ghost" disabled={!own.trim()} onClick={() => {addMini(own.trim()); setOwn('');}}><Plus size={15}/> Добавить</button>
+        </div>
         {minis.map(m => <div key={m.id} className="ge-mini">
-          <div className="ge-mini-top"><span>{m.title}</span><button type="button" aria-label="Убрать мини-цель" onClick={() => setMinis(list => list.filter(x => x.id !== m.id))}><X size={15}/></button></div>
-          <input value={m.reward} onChange={e => updMini(m.id, {reward: e.target.value})} placeholder="Награда за мини-цель" aria-label={`Награда: ${m.title}`}/>
+          <div className="ge-mini-top"><span><Flag size={14}/> {m.title}</span><button type="button" aria-label="Убрать мини-цель" onClick={() => setMinis(list => list.filter(x => x.id !== m.id))}><X size={15}/></button></div>
+          <span className="ge-reward-label small"><Gift size={14}/> Награда</span>
+          <input value={m.reward} onChange={e => updMini(m.id, {reward: e.target.value})} placeholder="Например: поход в зоопарк" aria-label={`Награда: ${m.title}`}/>
           <Chips items={miniRewardIdeas} onPick={r => updMini(m.id, {reward: r})}/>
         </div>)}
       </div>
     </div>
 
-    <label className="ge-inline"><Bell size={15}/> Джул напоминает о цели:
-      <select value={remind} onChange={e => setRemind(e.target.value)}>{reminderModes.map(r => <option key={r}>{r}</option>)}</select>
-    </label>
+    <div className="ge-step">
+      <span className="ge-num">3</span>
+      <div><b>Напоминания</b>
+        <label className="ge-inline"><Bell size={15}/> Джул напоминает о цели:
+          <select value={remind} onChange={e => setRemind(e.target.value)}>{reminderModes.map(r => <option key={r}>{r}</option>)}</select>
+        </label>
+      </div>
+    </div>
+
     <div className="ge-actions">
       {onCancel && <button type="button" className="lj-btn ghost" onClick={onCancel}>Отмена</button>}
       <button className="lj-btn" disabled={!ready}><Flag size={16}/> Сохранить цель</button>
     </div>
-    {!ready && <small className="ge-hint">Нужны большая цель и награды — за неё и за каждую мини-цель.</small>}
+    {!ready && <small className="ge-hint">Чтобы сохранить, нужны большая цель, награда за неё и награда за каждую мини-цель.</small>}
   </form>;
 }
 
