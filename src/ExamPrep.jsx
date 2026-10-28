@@ -1,16 +1,28 @@
 import React, {useState} from 'react';
-import {Lightbulb, Star, ArrowRight, RotateCcw, Layers, ListChecks, ClipboardList, Check, Repeat} from 'lucide-react';
+import {Lightbulb, Star, ArrowRight, RotateCcw, Layers, ListChecks, ClipboardList, Check, Repeat, BookOpen, ThumbsUp, Target} from 'lucide-react';
 import {Monkey} from './Characters.jsx';
 
-// Подготовка к контрольной: обучающие карточки по теме и интерактивный тест.
+// Подготовка к контрольной: тест, обучающие карточки и памятка по теме.
 // Правила: ошибка — это подсказка и вторая попытка, а не минус; подсказка — не стыдно.
+// В итоге теста показываем счёт: сколько верно с первой попытки, со второй и что не получилось.
 
 const exam = {
   title: 'Контрольная по математике',
   subtitle: 'Сложение и вычитание до 100 · 2 класс',
+  grade: '2 класса',
   teacher: 'Обезьянка',
-  topics: ['Десятки и единицы', 'Сложение и вычитание', 'Порядок действий', 'Проверка', 'Задачи', 'Сравнение чисел'],
 };
+
+// Памятка: одно короткое правило с примером на каждую тему теста.
+const memo = [
+  {topic: 'Десятки и единицы', rule: 'Первая цифра — десятки, вторая — единицы.', example: '47 = 40 + 7'},
+  {topic: 'Сложение', rule: 'Десятки складываем с десятками. Если удобно — дополняем до круглого числа.', example: '38 + 5 = 38 + 2 + 3 = 43'},
+  {topic: 'Вычитание', rule: 'Сначала вычитаем до круглого числа, потом остаток.', example: '52 − 7 = 52 − 2 − 5 = 45'},
+  {topic: 'Порядок действий', rule: 'Сначала действие в скобках, потом всё остальное слева направо.', example: '20 − (8 + 2) = 20 − 10 = 10'},
+  {topic: 'Проверка', rule: 'Сложение проверяем вычитанием: из суммы убираем одно слагаемое — получаем другое.', example: '45 + 17 = 62 → 62 − 17 = 45'},
+  {topic: 'Задачи', rule: 'Стало больше — складываем. Стало меньше — вычитаем.', example: 'Было 25, ушли 8: 25 − 8 = 17'},
+  {topic: 'Сравнение чисел', rule: 'Сначала сравниваем десятки. Если они равны — единицы.', example: '47 < 74, потому что 4 < 7'},
+];
 
 const cards = [
   {topic: 'Десятки и единицы', front: 'Сколько десятков и единиц в числе 47?', back: '4 десятка и 7 единиц.', example: '47 = 40 + 7'},
@@ -19,6 +31,8 @@ const cards = [
   {topic: 'Вычитание', front: 'Как решить 52 − 7?', back: 'Сначала вычитаем до круглого числа, потом остаток.', example: '52 − 2 = 50, потом 50 − 5 = 45'},
   {topic: 'Порядок действий', front: 'Что делать первым в примере 20 − (8 + 2)?', back: 'Сначала — действие в скобках.', example: '8 + 2 = 10, потом 20 − 10 = 10'},
   {topic: 'Проверка', front: 'Как проверить, что 45 + 17 = 62?', back: 'Вычитанием: из суммы вычитаем одно слагаемое — получаем другое.', example: '62 − 17 = 45 — сошлось!'},
+  {topic: 'Задачи', front: 'Было 30 конфет, 6 съели. Каким действием узнать, сколько осталось?', back: 'Конфет стало меньше — значит, вычитаем.', example: '30 − 6 = 24'},
+  {topic: 'Сравнение чисел', front: 'Какое число больше: 58 или 85?', back: 'Сравниваем десятки: 8 десятков больше, чем 5.', example: '85 > 58'},
 ];
 
 const questions = [
@@ -32,22 +46,44 @@ const questions = [
   {topic: 'Сравнение чисел', type: 'choice', text: 'Какой знак поставить: 47 … 74', options: ['<', '>', '='], answer: '<', hint: 'Сначала сравни десятки: 4 и 7.', explain: '4 десятка меньше, чем 7 десятков, значит, 47 < 74.'},
 ];
 
+const testTopics = [...new Set(questions.map(q => q.topic))];
+const lower = (list) => list.join(', ').toLowerCase();
+
 function Header({progress, total, stars, label}) {
   return <div className="exam-head">
     <div className="exam-badge"><Star size={26} fill="currentColor"/></div>
     <div className="exam-title"><b>{exam.title}</b><span>{exam.subtitle}</span></div>
     {total > 0 && <div className="exam-progress">
-      <div className="exam-progress-top"><span>{label}: {progress}/{total}</span><span><Star size={15} fill="currentColor"/> {stars}</span></div>
+      <div className="exam-progress-top"><span>{label}: {progress}/{total}</span>{stars !== undefined && <span className="exam-stars"><Star size={15} fill="currentColor"/> {stars}</span>}</div>
       <div className="bar"><i style={{width: `${(progress / total) * 100}%`}}/></div>
     </div>}
   </div>;
 }
 
-function Cards({onDone}) {
-  const [deck, setDeck] = useState(cards.map((c, i) => i));
+// Полукруглая шкала: зелёный — с первой попытки, жёлтый — со второй, розовый — не получилось.
+function ScoreGauge({first, second, missed, total}) {
+  const parts = [['first', first], ['second', second], ['missed', missed]];
+  let start = 0;
+  return <div className="gauge" role="img" aria-label={`Верно ${first + second} из ${total}`}>
+    <svg viewBox="0 0 120 68">
+      <path className="gauge-track" d="M10 60 A50 50 0 0 1 110 60" pathLength="100"/>
+      {parts.map(([cls, n]) => {
+        const len = (n / total) * 100;
+        const el = n > 0 && <path key={cls} className={`gauge-${cls}`} d="M10 60 A50 50 0 0 1 110 60" pathLength="100" strokeDasharray={`${len} 100`} strokeDashoffset={-start}/>;
+        start += len;
+        return el;
+      })}
+    </svg>
+    <div className="gauge-label"><b>{first + second}/{total}</b><span>верно</span></div>
+  </div>;
+}
+
+function Cards({focus, onTest}) {
+  const pool = focus.length ? cards.filter(c => focus.includes(c.topic)) : cards;
+  const [deck, setDeck] = useState(pool.map((c, i) => i));
   const [known, setKnown] = useState(0);
   const [flipped, setFlipped] = useState(false);
-  const card = cards[deck[0]];
+  const card = pool[deck[0]];
 
   const next = (isKnown) => {
     setFlipped(false);
@@ -56,7 +92,8 @@ function Cards({onDone}) {
   };
 
   return <>
-    <Header progress={known} total={cards.length} stars={known} label="Изучено"/>
+    <Header progress={known} total={pool.length} label="Изучено"/>
+    {focus.length > 0 && <div className="focus-note"><Target size={16}/> Только трудные темы: {lower(focus)}</div>}
     {card ? <div className="flash-wrap">
       <span className="chip">{card.topic}</span>
       <button className={`flash ${flipped ? 'flipped' : ''}`} onClick={() => setFlipped(f => !f)} aria-label={flipped ? 'Показать вопрос' : 'Перевернуть карточку'}>
@@ -73,65 +110,122 @@ function Cards({onDone}) {
       <Monkey className="finish-hero"/>
       <h3>Все карточки пройдены!</h3>
       <p>Теперь можно проверить себя в тесте.</p>
-      <button className="lj-btn" onClick={onDone}>Перейти к тесту <ArrowRight size={18}/></button>
+      <button className="lj-btn" onClick={onTest}>Перейти к тесту <ArrowRight size={18}/></button>
     </div>}
   </>;
 }
 
-function Test({onCards}) {
+function Memo({onTest}) {
+  return <>
+    <Header progress={0} total={0}/>
+    <div className="memo">
+      <div className="intro-hero"><Monkey/><div className="speech-inline">Это шпаргалка перед контрольной. Всё главное — на одном экране!</div></div>
+      <ul className="memo-list">{memo.map(m => <li key={m.topic}>
+        <b>{m.topic}</b><p>{m.rule}</p><code>{m.example}</code>
+      </li>)}</ul>
+      <button className="lj-btn memo-go" onClick={onTest}><ListChecks size={18}/> Проверить себя в тесте</button>
+    </div>
+  </>;
+}
+
+function Result({results, hintsUsed, onRestart, onCards, onMemo}) {
+  const total = questions.length;
+  const count = (s) => results.filter(r => r.status === s).length;
+  const first = count('first'), second = count('second'), missed = count('missed');
+  const hard = testTopics.filter(t => results.some(r => r.topic === t && r.status !== 'first'));
+  const easy = testTopics.filter(t => !hard.includes(t));
+  const headline = first === total ? 'Всё получилось с первого раза!'
+    : first + second === total ? 'Всё решено!'
+    : first + second >= total * .75 ? 'Почти всё получилось!'
+    : first + second >= total / 2 ? 'Отличное начало!' : 'Хорошая тренировка — давай разберёмся!';
+  const missedTasks = results.filter(r => r.status === 'missed');
+
+  return <>
+    <Header progress={total} total={total} stars={first} label="Вопросы"/>
+    <div className="exam-finish">
+      <ScoreGauge first={first} second={second} missed={missed} total={total}/>
+      <ul className="score-legend">
+        <li className="first">С первой попытки: <b>{first}</b></li>
+        <li className="second">Со второй попытки: <b>{second}</b></li>
+        <li className="missed">Не получилось: <b>{missed}</b></li>
+      </ul>
+      <h3>{headline}</h3>
+
+      <div className="result-blocks">
+        {easy.length > 0 && <div className="result-block good">
+          <b><ThumbsUp size={16}/> Что получается</b>
+          <ul>{easy.map(t => <li key={t}>{t}</li>)}</ul>
+        </div>}
+        {hard.length > 0 && <div className="result-block work">
+          <b><Target size={16}/> Над чем поработать</b>
+          <ul>{hard.map(t => <li key={t}><b>{t}.</b> {memo.find(m => m.topic === t).rule} <code>{memo.find(m => m.topic === t).example}</code></li>)}</ul>
+          {missedTasks.length > 0 && <p className="missed-tasks">Разобрали вместе: {missedTasks.map(r => r.text).join(' · ')}</p>}
+        </div>}
+      </div>
+
+      <div className="report-card">
+        <b><ClipboardList size={16}/> Отчёт для родителя</b>
+        <ul>
+          <li>{exam.subtitle}: верно {first + second} из {total} — с первой попытки {first}, со второй {second}, не получилось {missed}.</li>
+          <li>Подсказок понадобилось: {hintsUsed}.</li>
+          {easy.length > 0 && <li>Уверенно: {lower(easy)}.</li>}
+          <li>{hard.length ? `Повторить перед контрольной: ${lower(hard)}.` : 'Тема усвоена — можно идти на контрольную спокойно.'}</li>
+        </ul>
+      </div>
+
+      <div className="finish-actions">
+        {hard.length > 0 && <button className="lj-btn ghost" onClick={() => onCards(hard)}><Layers size={17}/> Карточки по трудным темам</button>}
+        <button className="lj-btn ghost" onClick={onMemo}><BookOpen size={17}/> Памятка</button>
+        <button className="lj-btn" onClick={onRestart}><RotateCcw size={17}/> Пройти ещё раз</button>
+      </div>
+    </div>
+  </>;
+}
+
+function Test({onCards, onMemo}) {
+  const [started, setStarted] = useState(false);
   const [idx, setIdx] = useState(0);
   const [status, setStatus] = useState('idle'); // idle | wrong | right | shown
   const [tried, setTried] = useState([]);
   const [hint, setHint] = useState(false);
   const [input, setInput] = useState('');
-  const [results, setResults] = useState([]);
+  const [results, setResults] = useState([]); // {topic, text, status: first | second | missed}
   const [hintsUsed, setHintsUsed] = useState(0);
   const q = questions[idx];
-  const done = idx >= questions.length;
-  const stars = results.filter(r => r.firstTry).length;
+  const stars = results.filter(r => r.status === 'first').length;
 
   const check = (value) => {
     const v = String(value).trim();
     if (!v || status === 'right' || status === 'shown') return;
     if (v === q.answer) {
       setStatus('right');
-      setResults(r => [...r, {topic: q.topic, firstTry: tried.length === 0}]);
+      setResults(r => [...r, {topic: q.topic, text: q.text, status: tried.length === 0 ? 'first' : 'second'}]);
     } else if (tried.length === 0) {
       setTried([v]); setStatus('wrong');
       if (!hint) {setHint(true); setHintsUsed(h => h + 1);}
     } else {
       setTried(t => [...t, v]); setStatus('shown');
-      setResults(r => [...r, {topic: q.topic, firstTry: false}]);
+      setResults(r => [...r, {topic: q.topic, text: q.text, status: 'missed'}]);
     }
   };
   const next = () => {setIdx(i => i + 1); setStatus('idle'); setTried([]); setHint(false); setInput('');};
   const restart = () => {setIdx(0); setResults([]); setHintsUsed(0); setStatus('idle'); setTried([]); setHint(false); setInput('');};
   const finished = status === 'right' || status === 'shown';
 
-  if (done) {
-    const repeat = [...new Set(results.filter(r => !r.firstTry).map(r => r.topic))];
-    return <>
-      <Header progress={questions.length} total={questions.length} stars={stars} label="Вопросы"/>
-      <div className="exam-finish">
-        <Monkey className="finish-hero"/>
-        <h3>{repeat.length ? 'Хорошая тренировка!' : 'Всё получилось с первого раза!'}</h3>
-        <p>С первой попытки: <b>{stars} из {questions.length}</b> ⭐</p>
-        {repeat.length > 0 && <div className="repeat-box"><b>Стоит повторить:</b> {repeat.join(', ')}</div>}
-        <div className="report-card">
-          <b><ClipboardList size={16}/> Отчёт для родителя</b>
-          <ul>
-            <li>{exam.subtitle}: {stars} из {questions.length} заданий с первой попытки.</li>
-            <li>Подсказок понадобилось: {hintsUsed}.</li>
-            <li>{repeat.length ? `Повторить перед контрольной: ${repeat.join(', ').toLowerCase()}.` : 'Тема усвоена — можно идти на контрольную спокойно.'}</li>
-          </ul>
-        </div>
-        <div className="finish-actions">
-          {repeat.length > 0 && <button className="lj-btn ghost" onClick={onCards}><Layers size={17}/> Повторить карточки</button>}
-          <button className="lj-btn" onClick={restart}><RotateCcw size={17}/> Пройти ещё раз</button>
-        </div>
+  if (!started) return <>
+    <Header progress={0} total={0}/>
+    <div className="exam-intro">
+      <div className="intro-hero"><Monkey/><div className="speech-inline">Проверим, что ты уже знаешь? Ошибаться можно — я подскажу!</div></div>
+      <div className="intro-topics">
+        <b><ListChecks size={16}/> Итоговый тест: {questions.length} заданий</b>
+        <p>По программе {exam.grade}: {lower(testTopics)}.</p>
       </div>
-    </>;
-  }
+      <p className="intro-note">Если ошибёшься — получишь подсказку и вторую попытку. В конце будет видно, что уже получается, а что стоит повторить.</p>
+      <div className="intro-actions"><button className="lj-btn" onClick={() => setStarted(true)}>Начать тест <ArrowRight size={18}/></button></div>
+    </div>
+  </>;
+
+  if (idx >= questions.length) return <Result results={results} hintsUsed={hintsUsed} onRestart={restart} onCards={onCards} onMemo={onMemo}/>;
 
   const optionClass = (o) => finished && o === q.answer ? 'right' : tried.includes(o) ? 'wrong' : '';
   return <>
@@ -159,24 +253,27 @@ function Test({onCards}) {
   </>;
 }
 
+const tabs = [
+  {id: 'test', icon: ListChecks, title: 'Тест'},
+  {id: 'cards', icon: Layers, title: 'Карточки'},
+  {id: 'memo', icon: BookOpen, title: 'Памятка'},
+];
+
 export default function ExamPrep() {
-  const [mode, setMode] = useState('intro');
+  const [tab, setTab] = useState('test');
+  const [focus, setFocus] = useState([]);
+  const [cardsRun, setCardsRun] = useState(0);
+  const openCards = (topics = []) => {setFocus(topics); setCardsRun(n => n + 1); setTab('cards');};
+
+  // Все вкладки остаются смонтированными, чтобы прогресс теста не терялся при переключении.
   return <div className="exam">
-    {mode === 'intro' && <>
-      <Header progress={0} total={0}/>
-      <div className="exam-intro">
-        <div className="intro-hero"><Monkey/><div className="speech-inline">Проверим, что ты уже знаешь? Ошибаться можно — я подскажу!</div></div>
-        <div className="intro-topics"><b><Lightbulb size={16}/> В контрольной будут задания на:</b><ul>{exam.topics.map(t => <li key={t}>{t}</li>)}</ul></div>
-        <p className="intro-note">Здесь нет оценок. Если ошибёшься — получишь подсказку и вторую попытку.</p>
-        <div className="intro-actions">
-          <button className="lj-btn ghost" onClick={() => setMode('cards')}><Layers size={18}/> Сначала карточки</button>
-          <button className="lj-btn" onClick={() => setMode('test')}><ListChecks size={18}/> Начать тест</button>
-        </div>
-      </div>
-    </>}
-    {mode === 'cards' && <Cards onDone={() => setMode('test')}/>}
-    {mode === 'test' && <Test onCards={() => setMode('cards')}/>}
-    {mode !== 'intro' && <button className="exam-back" onClick={() => setMode('intro')}>← К началу подготовки</button>}
+    <div className="exam-tabs" role="tablist" aria-label="Подготовка к контрольной">
+      {tabs.map(({id, icon: Icon, title}) => <button key={id} role="tab" aria-selected={tab === id} className={tab === id ? 'on' : ''}
+        onClick={() => id === 'cards' && tab !== 'cards' ? openCards() : setTab(id)}><Icon size={16}/> {title}</button>)}
+    </div>
+    <div hidden={tab !== 'test'} className="exam-panel"><Test onCards={openCards} onMemo={() => setTab('memo')}/></div>
+    <div hidden={tab !== 'cards'} className="exam-panel"><Cards key={cardsRun} focus={focus} onTest={() => setTab('test')}/></div>
+    <div hidden={tab !== 'memo'} className="exam-panel"><Memo onTest={() => setTab('test')}/></div>
     <small className="tutor-note">Демонстрация · задания для примера · 2 класс</small>
   </div>;
 }

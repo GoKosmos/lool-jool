@@ -316,7 +316,7 @@ p { margin: 0; }
 .exam-title span { font-size: 14px; color: var(--ink-soft); }
 .exam-progress { grid-column: 1 / -1; padding: 10px 14px; border-radius: 16px; background: #fff; border: 2px solid #1f1a3d; }
 .exam-progress-top { display: flex; justify-content: space-between; font-weight: 700; font-size: 14px; margin-bottom: 6px; }
-.exam-progress-top span:last-child { display: inline-flex; align-items: center; gap: 4px; color: #d99a00; }
+.exam-progress-top .exam-stars { display: inline-flex; align-items: center; gap: 4px; color: #d99a00; }
 .bar { height: 12px; border-radius: 999px; background: #ece7d8; overflow: hidden; }
 .bar i { display: block; height: 100%; border-radius: 999px; background: var(--tone-2); transition: width .4s; }
 .chip { display: inline-block; padding: 5px 12px; border-radius: 999px; background: var(--tone-3); color: #fff; font-size: 13px; font-weight: 700; border: 2px solid #1f1a3d; }
@@ -379,6 +379,51 @@ p { margin: 0; }
 .exam-finish h3 { font-size: 24px; }
 .exam-finish .report-card { text-align: left; width: 100%; }
 .repeat-box { padding: 10px 14px; border-radius: 14px; background: #fff8dc; border: 2px dashed #e0b400; font-size: 15px; }
+
+.exam-tabs { display: flex; gap: 6px; padding: 5px; border-radius: 999px; background: #f1eee4; border: 2px solid #1f1a3d; }
+.exam-tabs button { flex: 1; display: inline-flex; justify-content: center; align-items: center; gap: 6px; padding: 9px 10px; border-radius: 999px; font-weight: 700; font-size: 15px; color: var(--ink-soft); }
+.exam-tabs button:hover { color: var(--ink); }
+.exam-tabs button.on { background: var(--tone-3); color: #fff; box-shadow: 2px 2px 0 #1f1a3d; }
+.exam-panel { display: grid; gap: 14px; }
+.exam-panel[hidden] { display: none; }
+.intro-topics p { margin: 0; font-size: 15px; }
+.focus-note { display: flex; align-items: center; gap: 6px; padding: 8px 12px; border-radius: 14px; background: #efeaff; border: 2px dashed #6e5ea8; font-size: 14px; font-weight: 600; }
+
+.memo { display: grid; gap: 14px; }
+.memo-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
+.memo-list li { padding: 12px 14px; border-radius: 16px; background: #fff; border: 2px solid #1f1a3d; box-shadow: 3px 3px 0 #1f1a3d; }
+.memo-list li:nth-child(3n+1) { background: #fff8dc; }
+.memo-list li:nth-child(3n+2) { background: #e3faf3; }
+.memo-list li:nth-child(3n) { background: #f4f1ff; }
+.memo-list b { font-family: var(--font-head); font-size: 15px; }
+.memo-list p { margin: 2px 0 6px; font-size: 15px; }
+.memo-list code, .result-block code { display: inline-block; padding: 2px 8px; border-radius: 8px; background: #fff; border: 2px solid #1f1a3d; font-family: var(--font-head); font-size: 13px; }
+.memo-go { justify-self: start; }
+
+.gauge { position: relative; width: 220px; }
+.gauge svg { display: block; width: 100%; }
+.gauge path { fill: none; stroke-width: 14; }
+.gauge-track { stroke: #ece7d8; }
+.gauge-first { stroke: var(--tone-2); }
+.gauge-second { stroke: var(--tone-1); }
+.gauge-missed { stroke: #ffaab8; }
+.gauge-label { position: absolute; left: 0; right: 0; bottom: 0; display: grid; line-height: 1.1; }
+.gauge-label b { font-family: var(--font-head); font-size: 30px; }
+.gauge-label span { font-size: 14px; color: var(--ink-soft); font-weight: 600; }
+.score-legend { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; justify-content: center; gap: 6px 14px; font-size: 14px; color: var(--ink-soft); }
+.score-legend li { display: inline-flex; align-items: center; gap: 6px; }
+.score-legend li::before { content: ''; width: 12px; height: 12px; border-radius: 4px; border: 2px solid #1f1a3d; }
+.score-legend .first::before { background: var(--tone-2); }
+.score-legend .second::before { background: var(--tone-1); }
+.score-legend .missed::before { background: #ffaab8; }
+.score-legend b { color: var(--ink); }
+.result-blocks { display: grid; gap: 10px; width: 100%; text-align: left; }
+.result-block { padding: 12px 16px; border-radius: 16px; border: 2px solid; font-size: 15px; }
+.result-block > b { display: flex; align-items: center; gap: 6px; margin-bottom: 4px; }
+.result-block ul { margin: 0; padding-left: 20px; display: grid; gap: 4px; }
+.result-block.good { background: #e3faf3; border-color: #1b7a5f; }
+.result-block.work { background: #fff8dc; border-color: #e0b400; }
+.missed-tasks { margin: 8px 0 0; font-size: 14px; color: var(--ink-soft); }
 
 @keyframes pulse { 0%, 100% { box-shadow: 0 5px 0 #1f1a3d, 0 0 0 0 #ffd23f99; } 50% { box-shadow: 0 5px 0 #1f1a3d, 0 0 0 12px #ffd23f00; } }
 
