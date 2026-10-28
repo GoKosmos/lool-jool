@@ -1,10 +1,11 @@
 import React, {useState} from 'react';
-import {Lightbulb, Star, ArrowRight, RotateCcw, Layers, ListChecks, ClipboardList, Check, Repeat, BookOpen, ThumbsUp, Target} from 'lucide-react';
+import {Lightbulb, Star, ArrowRight, RotateCcw, Layers, ListChecks, ClipboardList, Check, Repeat, BookOpen, ThumbsUp, Target, Wrench} from 'lucide-react';
 import {Monkey} from './Characters.jsx';
 
 // Подготовка к контрольной: тест, обучающие карточки и памятка по теме.
 // Правила: ошибка — это подсказка и вторая попытка, а не минус; подсказка — не стыдно.
 // В итоге теста показываем счёт: сколько верно с первой попытки, со второй и что не получилось.
+// «Работа над ошибками» — повторный круг только по заданиям, которые не получились с первой попытки.
 
 const exam = {
   title: 'Контрольная по математике',
@@ -128,21 +129,25 @@ function Memo({onTest}) {
   </>;
 }
 
-function Result({results, hintsUsed, onRestart, onCards, onMemo}) {
-  const total = questions.length;
+function Result({results, hintsUsed, fixing, onRestart, onFix, onCards, onMemo}) {
+  const total = results.length;
   const count = (s) => results.filter(r => r.status === s).length;
   const first = count('first'), second = count('second'), missed = count('missed');
-  const hard = testTopics.filter(t => results.some(r => r.topic === t && r.status !== 'first'));
-  const easy = testTopics.filter(t => !hard.includes(t));
-  const headline = first === total ? 'Всё получилось с первого раза!'
+  const topics = testTopics.filter(t => results.some(r => r.topic === t));
+  const hard = topics.filter(t => results.some(r => r.topic === t && r.status !== 'first'));
+  const easy = topics.filter(t => !hard.includes(t));
+  const mistakes = results.filter(r => r.status !== 'first').map(r => r.qi);
+  const headline = fixing && first === total ? 'Все ошибки исправлены!'
+    : first === total ? 'Всё получилось с первого раза!'
     : first + second === total ? 'Всё решено!'
     : first + second >= total * .75 ? 'Почти всё получилось!'
     : first + second >= total / 2 ? 'Отличное начало!' : 'Хорошая тренировка — давай разберёмся!';
   const missedTasks = results.filter(r => r.status === 'missed');
 
   return <>
-    <Header progress={total} total={total} stars={first} label="Вопросы"/>
+    <Header progress={total} total={total} stars={first} label={fixing ? 'Работа над ошибками' : 'Вопросы'}/>
     <div className="exam-finish">
+      {fixing && <span className="chip">Работа над ошибками</span>}
       <ScoreGauge first={first} second={second} missed={missed} total={total}/>
       <ul className="score-legend">
         <li className="first">С первой попытки: <b>{first}</b></li>
@@ -166,7 +171,7 @@ function Result({results, hintsUsed, onRestart, onCards, onMemo}) {
       <div className="report-card">
         <b><ClipboardList size={16}/> Отчёт для родителя</b>
         <ul>
-          <li>{exam.subtitle}: верно {first + second} из {total} — с первой попытки {first}, со второй {second}, не получилось {missed}.</li>
+          <li>{fixing ? 'Работа над ошибками' : exam.subtitle}: верно {first + second} из {total} — с первой попытки {first}, со второй {second}, не получилось {missed}.</li>
           <li>Подсказок понадобилось: {hintsUsed}.</li>
           {easy.length > 0 && <li>Уверенно: {lower(easy)}.</li>}
           <li>{hard.length ? `Повторить перед контрольной: ${lower(hard)}.` : 'Тема усвоена — можно идти на контрольную спокойно.'}</li>
@@ -174,9 +179,10 @@ function Result({results, hintsUsed, onRestart, onCards, onMemo}) {
       </div>
 
       <div className="finish-actions">
+        {mistakes.length > 0 && <button className="lj-btn" onClick={() => onFix(mistakes)}><Wrench size={17}/> Работа над ошибками ({mistakes.length})</button>}
         {hard.length > 0 && <button className="lj-btn ghost" onClick={() => onCards(hard)}><Layers size={17}/> Карточки по трудным темам</button>}
         <button className="lj-btn ghost" onClick={onMemo}><BookOpen size={17}/> Памятка</button>
-        <button className="lj-btn" onClick={onRestart}><RotateCcw size={17}/> Пройти ещё раз</button>
+        <button className={`lj-btn ${mistakes.length ? 'ghost' : ''}`} onClick={onRestart}><RotateCcw size={17}/> {fixing ? 'Пройти весь тест' : 'Пройти ещё раз'}</button>
       </div>
     </div>
   </>;
@@ -189,9 +195,12 @@ function Test({onCards, onMemo}) {
   const [tried, setTried] = useState([]);
   const [hint, setHint] = useState(false);
   const [input, setInput] = useState('');
-  const [results, setResults] = useState([]); // {topic, text, status: first | second | missed}
+  const [results, setResults] = useState([]); // {qi, topic, text, status: first | second | missed}
   const [hintsUsed, setHintsUsed] = useState(0);
-  const q = questions[idx];
+  const [round, setRound] = useState(questions.map((_, i) => i)); // номера заданий текущего круга
+  const fixing = round.length < questions.length;
+  const qi = round[idx];
+  const q = questions[qi];
   const stars = results.filter(r => r.status === 'first').length;
 
   const check = (value) => {
@@ -199,17 +208,17 @@ function Test({onCards, onMemo}) {
     if (!v || status === 'right' || status === 'shown') return;
     if (v === q.answer) {
       setStatus('right');
-      setResults(r => [...r, {topic: q.topic, text: q.text, status: tried.length === 0 ? 'first' : 'second'}]);
+      setResults(r => [...r, {qi, topic: q.topic, text: q.text, status: tried.length === 0 ? 'first' : 'second'}]);
     } else if (tried.length === 0) {
       setTried([v]); setStatus('wrong');
       if (!hint) {setHint(true); setHintsUsed(h => h + 1);}
     } else {
       setTried(t => [...t, v]); setStatus('shown');
-      setResults(r => [...r, {topic: q.topic, text: q.text, status: 'missed'}]);
+      setResults(r => [...r, {qi, topic: q.topic, text: q.text, status: 'missed'}]);
     }
   };
   const next = () => {setIdx(i => i + 1); setStatus('idle'); setTried([]); setHint(false); setInput('');};
-  const restart = () => {setIdx(0); setResults([]); setHintsUsed(0); setStatus('idle'); setTried([]); setHint(false); setInput('');};
+  const restart = (list = questions.map((_, i) => i)) => {setRound(list); setIdx(0); setResults([]); setHintsUsed(0); setStatus('idle'); setTried([]); setHint(false); setInput('');};
   const finished = status === 'right' || status === 'shown';
 
   if (!started) return <>
@@ -225,11 +234,11 @@ function Test({onCards, onMemo}) {
     </div>
   </>;
 
-  if (idx >= questions.length) return <Result results={results} hintsUsed={hintsUsed} onRestart={restart} onCards={onCards} onMemo={onMemo}/>;
+  if (idx >= round.length) return <Result results={results} hintsUsed={hintsUsed} fixing={fixing} onRestart={() => restart()} onFix={restart} onCards={onCards} onMemo={onMemo}/>;
 
   const optionClass = (o) => finished && o === q.answer ? 'right' : tried.includes(o) ? 'wrong' : '';
   return <>
-    <Header progress={idx + (finished ? 1 : 0)} total={questions.length} stars={stars} label="Вопросы"/>
+    <Header progress={idx + (finished ? 1 : 0)} total={round.length} stars={stars} label={fixing ? 'Работа над ошибками' : 'Вопросы'}/>
     <div className="question">
       <div className="question-top">
         <span className="chip">{idx + 1}. {q.topic}</span>
@@ -248,7 +257,7 @@ function Test({onCards, onMemo}) {
       {status === 'wrong' && <div className="feedback try"><b>Почти! Попробуй ещё раз.</b><span>{q.type === 'input' ? `«${tried[0]}» — не совсем так. ` : ''}Посмотри на подсказку выше.</span></div>}
       {status === 'right' && <div className="feedback ok"><b>{tried.length ? 'Получилось! 💪' : 'Верно! 🎉'}</b><span>{q.explain}</span></div>}
       {status === 'shown' && <div className="feedback show"><b>Ничего страшного — разберём.</b><span>Правильный ответ: {q.answer}. {q.explain}</span></div>}
-      {finished && <button className="lj-btn next-btn" onClick={next}>{idx + 1 < questions.length ? 'Следующий вопрос' : 'Результат'} <ArrowRight size={18}/></button>}
+      {finished && <button className="lj-btn next-btn" onClick={next}>{idx + 1 < round.length ? 'Следующий вопрос' : 'Результат'} <ArrowRight size={18}/></button>}
     </div>
   </>;
 }
