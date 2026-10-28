@@ -549,3 +549,24 @@ p { margin: 0; }
 }
 .cabinets { text-align: center; } .cabinets .section-title { margin-bottom: 28px; } .cab-intro { text-align: left; }
 @media (max-width: 640px) { .cab-stats b { font-size: 20px; } .cab-stats div { padding: 8px 10px; } }
+
+/* Нагрузка: дни, предметы, развивающие курсы */
+.cab-block.load { gap: 14px; background: #fff; }
+.load-row { display: grid; gap: 8px; }
+.load-label { display: flex; align-items: center; gap: 6px; font-weight: 700; font-size: 14px; }
+.day-pick { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; max-width: 380px; }
+.day-pick button { height: 42px; border-radius: 12px; background: #fff; border: 2px solid #1f1a3d; font-family: var(--font-head); font-size: 16px; }
+.day-pick button.on { background: var(--tone-3); color: #fff; box-shadow: 2px 2px 0 #1f1a3d; }
+.subj-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.subj { display: inline-flex; align-items: center; gap: 4px; padding: 6px 11px; border-radius: 999px; background: #fff; border: 2px solid #cfc7b0; color: var(--ink-soft); font-size: 13px; font-weight: 600; }
+.subj.on { background: #d8f7ec; border-color: #1f1a3d; color: var(--ink); }
+.subj.extra.on { background: #f4f1ff; }
+button.subj:hover { border-color: #1f1a3d; }
+.load-quick { display: flex; gap: 8px; }
+.load-quick button { padding: 4px 12px; border-radius: 999px; font-size: 13px; font-weight: 700; color: #6e5ea8; border: 1.5px dashed #6e5ea8; }
+.extra-list { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.extra-item { display: grid; gap: 2px; padding: 9px 12px; border-radius: 14px; background: #fff; border: 2px dashed #cfc7b0; text-align: left; }
+.extra-item b { display: flex; align-items: center; gap: 5px; font-size: 14px; }
+.extra-item small { color: var(--ink-soft); font-size: 12px; }
+.extra-item.on { background: #f4f1ff; border: 2px solid #1f1a3d; box-shadow: 2px 2px 0 #1f1a3d; }
+@media (max-width: 640px) { .extra-list { grid-template-columns: 1fr; } .day-pick button { height: 38px; } }

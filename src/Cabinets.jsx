@@ -1,5 +1,5 @@
 import React, {useState} from 'react';
-import {Lock, Compass, ArrowLeft, Plus, Star, ShieldCheck, Settings, ClipboardList, ThumbsUp, Target, Heart, CalendarCheck, Clock, Lightbulb, Sparkles, Send, Check} from 'lucide-react';
+import {Lock, Compass, ArrowLeft, Plus, Star, ShieldCheck, Settings, ClipboardList, ThumbsUp, Target, Heart, CalendarCheck, Clock, Lightbulb, Sparkles, Send, Check, BookOpen} from 'lucide-react';
 import {Sloth, Monkey} from './Characters.jsx';
 
 // Личные кабинеты (демо на заготовленных данных).
@@ -8,6 +8,31 @@ import {Sloth, Monkey} from './Characters.jsx';
 // Ребёнок знает, что родитель видит его занятия, но сам отчёт родителя не видит.
 
 const DEMO_PIN = '1234';
+
+// Предметы начальной школы по ФОП НОО; в 1 классе — 8, во 2–3 — 9, в 4 — 10 (добавляется ОРКСЭ).
+const subjects = [
+  {id: 'russian', title: 'Русский язык', from: 1},
+  {id: 'reading', title: 'Литературное чтение', from: 1},
+  {id: 'foreign', title: 'Иностранный язык', from: 2},
+  {id: 'math', title: 'Математика', from: 1},
+  {id: 'world', title: 'Окружающий мир', from: 1},
+  {id: 'orkse', title: 'ОРКСЭ', from: 4, note: 'основы религиозных культур и светской этики'},
+  {id: 'art', title: 'Изобразительное искусство', from: 1},
+  {id: 'music', title: 'Музыка', from: 1},
+  {id: 'tech', title: 'Труд (технология)', from: 1},
+  {id: 'pe', title: 'Физическая культура', from: 1},
+];
+// Развивающие курсы помимо школьной программы (soft skills).
+const extras = [
+  {id: 'eq', title: 'Эмоциональный интеллект', text: 'понимать свои чувства и чувства других'},
+  {id: 'biz', title: 'Юный предприниматель', text: 'деньги, идеи и первый проект'},
+  {id: 'logic', title: 'Логика и мышление', text: 'головоломки, закономерности, рассуждения'},
+  {id: 'talk', title: 'Общение и дружба', text: 'договариваться, слушать, решать споры'},
+  {id: 'creative', title: 'Креативность', text: 'придумывать, сочинять, изобретать'},
+  {id: 'focus', title: 'Внимание и память', text: 'игры на сосредоточенность'},
+];
+const gradeSubjects = (grade) => subjects.filter(x => x.from <= grade);
+const title = (id) => (subjects.find(x => x.id === id) || extras.find(x => x.id === id)).title;
 const days = ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс'];
 
 const demoChildren = [
@@ -19,11 +44,12 @@ const demoChildren = [
       {time: '16:10', format: 'Путь знаний', topic: 'Сложение с переходом через десяток', note: 'урок пройден, 10 минут'},
       {time: '16:25', format: 'Подготовка к контрольной', topic: 'Сложение и вычитание до 100', note: 'тест: верно 6 из 8, работа над ошибками — 3 из 3'},
     ], summary: 'Миша прошёл урок о сложении с переходом через десяток и тест к контрольной. Вычитание с переходом сначала давалось трудно, но после подсказки «дойди до круглого числа» Миша решил похожие задания сам.'},
-    week: {minutes: [12, 15, 0, 18, 22, 0, 0], goal: 4,
+    plan: {days: 4, subjects: ['math', 'russian', 'reading', 'world'], extras: ['eq']},
+    week: {minutes: [12, 15, 0, 18, 22, 0, 0],
       good: ['Десятки и единицы', 'Порядок действий', 'Задачи в одно действие'],
       work: ['Вычитание с переходом через десяток', 'Сравнение чисел'],
       tests: [{title: 'Тест к контрольной: сложение и вычитание до 100', score: 'верно 6 из 8', fix: 'работа над ошибками — 3 из 3'}],
-      summary: 'На этой неделе — 4 занятия, цель выполнена. Миша увереннее работает с десятками и скобками. Вычитание с переходом пока требует подсказок, но к концу недели их нужно меньше.',
+      summary: 'На этой неделе — 4 занятия. Миша увереннее работает с десятками и скобками. Вычитание с переходом пока требует подсказок, но к концу недели их нужно меньше.',
       tip: 'Поиграйте в магазин: «У тебя 52 рубля, мороженое стоит 7. Сколько останется?» — это закрепит вычитание с переходом.'},
     month: {topics: [
       ['Числа до 100', 'done'], ['Десятки и единицы', 'done'], ['Сложение без перехода', 'done'], ['Сложение с переходом', 'done'],
@@ -34,14 +60,15 @@ const demoChildren = [
       summary: 'За месяц Миша прошёл 14 занятий. Освоено 5 тем из 10 по программе. Лучше всего идут задачи со скобками, больше всего внимания нужно вычитанию с переходом.'}},
   {id: 'anya', name: 'Аня', grade: 4, hero: 'sloth',
     path: {title: 'Части речи', done: 5, total: 9},
+    plan: {days: 3, subjects: ['russian', 'reading', 'math', 'foreign'], extras: ['biz', 'logic']},
     skills: ['Нахожу имя прилагательное', 'Различаю род и число существительных', 'Подбираю проверочные слова'],
     stickers: 12,
     today: {minutes: 0, hints: 0, sessions: [], summary: ''},
-    week: {minutes: [15, 0, 20, 0, 15, 10, 0], goal: 3,
+    week: {minutes: [15, 0, 20, 0, 15, 10, 0],
       good: ['Имя прилагательное', 'Безударные гласные в корне'],
       work: ['Спряжение глаголов'],
       tests: [],
-      summary: 'Аня занималась 4 раза — больше цели. Хорошо справляется с прилагательными, а со спряжением глаголов просит подсказку почти в каждом задании.',
+      summary: 'Аня занималась 4 раза. Хорошо справляется с прилагательными, а со спряжением глаголов просит подсказку почти в каждом задании.',
       tip: 'Попросите Аню придумать 3 глагола про ваш вечер и определить спряжение — она любит объяснять.'},
     month: {topics: [['Имя существительное', 'done'], ['Имя прилагательное', 'done'], ['Местоимение', 'done'], ['Безударные гласные', 'done'], ['Спряжение глаголов', 'progress'], ['Наречие', 'todo']],
       growth: ['Безударные гласные: стала сама подбирать проверочные слова'],
@@ -51,6 +78,7 @@ const demoChildren = [
 
 const Avatar = ({hero, className = ''}) => hero === 'sloth' ? <Sloth className={className}/> : <Monkey className={className}/>;
 const plural = (n, one, few, many) => n % 10 === 1 && n % 100 !== 11 ? one : n % 10 >= 2 && n % 10 <= 4 && (n % 100 < 10 || n % 100 >= 20) ? few : many;
+const daysText = (n) => `${n} ${plural(n, 'день', 'дня', 'дней')} в неделю`;
 
 function Picker({children, onChild, onParent}) {
   return <div className="cab-picker">
@@ -86,6 +114,14 @@ function ChildRoom({child, tasks, onBack}) {
       <b><Compass size={16}/> Мой путь: {child.path.title}</b>
       <div className="bar"><i style={{width: `${child.path.done / child.path.total * 100}%`}}/></div>
       <small>Пройдено {child.path.done} из {child.path.total} уроков</small>
+    </div>
+
+    <div className="cab-block">
+      <b><BookOpen size={16}/> Мои предметы · {daysText(child.plan.days)}</b>
+      <div className="subj-chips">
+        {child.plan.subjects.map(id => <span key={id} className="subj on">{title(id)}</span>)}
+        {child.plan.extras.map(id => <span key={id} className="subj extra on"><Sparkles size={13}/> {title(id)}</span>)}
+      </div>
     </div>
 
     <div className="cab-grid">
@@ -151,11 +187,12 @@ function Today({c}) {
 function Week({c}) {
   const w = c.week;
   const sessions = w.minutes.filter(Boolean).length;
+  const goal = c.plan.days;
   const total = w.minutes.reduce((a, b) => a + b, 0);
   return <>
     <div className="cab-stats">
       <div><b>{total}</b><span>минут за неделю</span></div>
-      <div><b>{sessions} из {w.goal}</b><span>занятий по цели</span></div>
+      <div><b>{Math.min(sessions, goal)} из {goal}</b><span>{sessions >= goal ? 'цель недели выполнена' : 'дней по цели'}</span></div>
     </div>
     <div className="cab-block"><b><CalendarCheck size={16}/> Минуты занятий по дням</b><WeekChart minutes={w.minutes}/></div>
     <div className="cab-grid">
@@ -178,7 +215,7 @@ function Month({c}) {
       <div><b>{m.minutes}</b><span>минут</span></div>
       <div><b>{count('done')} из {m.topics.length}</b><span>тем освоено</span></div>
     </div>
-    <div className="cab-block"><b><Compass size={16}/> Карта программы {c.grade} класса</b>
+    <div className="cab-block"><b><Compass size={16}/> Карта программы · {c.path.title.startsWith('Части') ? 'русский язык' : 'математика'}, {c.grade} класс</b>
       <div className="topic-map">{m.topics.map(([t, s]) => <span key={t} className={`topic ${s}`}>{t}<em>{label[s]}</em></span>)}</div>
       <div className="topic-legend"><span className="done">освоено — {count('done')}</span><span className="progress">в процессе — {count('progress')}</span><span className="todo">впереди — {count('todo')}</span></div>
     </div>
@@ -199,7 +236,46 @@ function AssignTask({child, onAdd}) {
   </form>;
 }
 
-function ParentRoom({children, tasks, onAddTask, onAddChild, onBack}) {
+function LoadSettings({c, onPlan}) {
+  const {days, subjects: chosen, extras: chosenExtras} = c.plan;
+  const list = gradeSubjects(c.grade);
+  const set = (patch) => onPlan(c.id, {...c.plan, ...patch});
+  const toggle = (id) => chosen.includes(id) ? chosen.length > 1 && set({subjects: chosen.filter(x => x !== id)}) : set({subjects: [...chosen, id]});
+  const toggleExtra = (id) => set({extras: chosenExtras.includes(id) ? chosenExtras.filter(x => x !== id) : [...chosenExtras, id]});
+  return <div className="cab-block load">
+    <b><CalendarCheck size={16}/> Нагрузка · {c.name}</b>
+
+    <div className="load-row">
+      <span className="load-label">Сколько дней в неделю заниматься</span>
+      <div className="day-pick" role="radiogroup" aria-label="Дней в неделю">
+        {[1, 2, 3, 4, 5, 6, 7].map(n => <button key={n} role="radio" aria-checked={days === n} className={days === n ? 'on' : ''} onClick={() => set({days: n})}>{n}</button>)}
+      </div>
+      <small>{daysText(days)}. {days >= 6 ? 'Оставьте ребёнку день-два отдыха — без штрафов за пропуски.' : 'Это цель недели, без штрафов за пропуски.'}</small>
+    </div>
+
+    <div className="load-row">
+      <span className="load-label">Школьные предметы · выбрано {chosen.filter(id => list.some(x => x.id === id)).length} из {list.length} ({c.grade} класс)</span>
+      <div className="subj-chips">
+        {list.map(x => <button key={x.id} className={`subj ${chosen.includes(x.id) ? 'on' : ''}`} aria-pressed={chosen.includes(x.id)} title={x.note} onClick={() => toggle(x.id)}>{chosen.includes(x.id) && <Check size={13}/>} {x.title}</button>)}
+      </div>
+      <div className="load-quick">
+        <button onClick={() => set({subjects: list.map(x => x.id)})}>Все предметы</button>
+        <button onClick={() => set({subjects: [chosen.find(id => list.some(x => x.id === id)) || 'math']})}>Только один</button>
+      </div>
+    </div>
+
+    <div className="load-row">
+      <span className="load-label"><Sparkles size={14}/> Развивающие курсы — по желанию</span>
+      <div className="extra-list">
+        {extras.map(x => <button key={x.id} className={`extra-item ${chosenExtras.includes(x.id) ? 'on' : ''}`} aria-pressed={chosenExtras.includes(x.id)} onClick={() => toggleExtra(x.id)}>
+          <b>{chosenExtras.includes(x.id) ? <Check size={14}/> : <Plus size={14}/>} {x.title}</b><small>{x.text}</small>
+        </button>)}
+      </div>
+    </div>
+  </div>;
+}
+
+function ParentRoom({children, tasks, onAddTask, onAddChild, onPlan, onBack}) {
   const [cid, setCid] = useState(children[0].id);
   const [period, setPeriod] = useState('today');
   const [adding, setAdding] = useState(false);
@@ -239,10 +315,12 @@ function ParentRoom({children, tasks, onAddTask, onAddChild, onBack}) {
       <small>Задание появится в кабинете ребёнка.</small>
     </div>
 
+    <LoadSettings c={c} onPlan={onPlan}/>
+
     <div className="cab-grid">
       <div className="cab-block safe"><b><ShieldCheck size={16}/> Безопасность</b><small>Сигналов нет. Если ребёнок напишет, что ему страшно или больно, вы сразу получите уведомление.</small></div>
       <div className="cab-block"><b><Settings size={16}/> Настройки</b>
-        <ul className="cab-settings"><li><Clock size={14}/> Занятие — до 20 минут</li><li><CalendarCheck size={14}/> Цель — {c.week?.goal ?? 3} занятия в неделю</li><li><Send size={14}/> Резюме на почту — раз в неделю</li></ul></div>
+        <ul className="cab-settings"><li><Clock size={14}/> Занятие — до 20 минут</li><li><Send size={14}/> Резюме на почту — раз в неделю</li></ul></div>
     </div>
     <p className="cab-note">Ребёнок знает, что вы видите его занятия и успехи, но сам этот отчёт не видит.</p>
   </div>;
@@ -252,11 +330,12 @@ export default function Cabinets() {
   const [children, setChildren] = useState(demoChildren);
   const [tasks, setTasks] = useState([{id: 1, child: 'misha', text: 'Подготовиться к контрольной по сложению и вычитанию', due: 'пятницы'}]);
   const [view, setView] = useState({mode: 'pick'});
+  const setPlan = (id, plan) => setChildren(list => list.map(c => c.id === id ? {...c, plan} : c));
   const addTask = (t) => setTasks(list => [...list, {...t, id: Date.now()}]);
   const addChild = (name, grade) => {
     const id = `kid-${Date.now()}`;
     setChildren(list => [...list, {id, name, grade, hero: list.length % 2 ? 'monkey' : 'sloth',
-      path: {title: 'Первый остров', done: 0, total: 8}, skills: ['Скоро здесь появятся первые умения!'], stickers: 0,
+      path: {title: 'Первый остров', done: 0, total: 8}, plan: {days: 3, subjects: ['math', 'russian', 'reading', 'world'], extras: []}, skills: ['Скоро здесь появятся первые умения!'], stickers: 0,
       today: {minutes: 0, hints: 0, sessions: [], summary: ''}}]);
     return id;
   };
@@ -265,7 +344,7 @@ export default function Cabinets() {
     {view.mode === 'pick' && <Picker children={children} onChild={id => setView({mode: 'child', id})} onParent={() => setView({mode: 'pin'})}/>}
     {view.mode === 'child' && <ChildRoom child={children.find(c => c.id === view.id)} tasks={tasks} onBack={() => setView({mode: 'pick'})}/>}
     {view.mode === 'pin' && <PinGate onOk={() => setView({mode: 'parent'})} onBack={() => setView({mode: 'pick'})}/>}
-    {view.mode === 'parent' && <ParentRoom children={children} tasks={tasks} onAddTask={addTask} onAddChild={addChild} onBack={() => setView({mode: 'pick'})}/>}
+    {view.mode === 'parent' && <ParentRoom children={children} tasks={tasks} onAddTask={addTask} onAddChild={addChild} onPlan={setPlan} onBack={() => setView({mode: 'pick'})}/>}
     <small className="tutor-note">Демонстрация · данные для примера</small>
   </div>;
 }
