@@ -100,15 +100,6 @@ function GoalEditor({initial, onSave, onCancel}) {
         <label className="ge-inline">Срок пути:
           <select value={weeks} onChange={e => setWeeks(+e.target.value)}>{durations.map(d => <option key={d.weeks} value={d.weeks}>{d.title}</option>)}</select>
         </label>
-        <div className="ge-tip">
-          <b><Lightbulb size={15}/> Подсказка: как наградам не перебить интерес к учёбе</b>
-          <ul>
-            <li>Награда — приятный бонус, а не «цена» за оценку. Иначе ребёнок начинает учиться ради подарка, а не ради «я понял».</li>
-            <li>Лучше работают мини-цели про старание: занятия, работа над ошибками, «объясни сам», — их ребёнок может выполнить своими силами.</li>
-            <li>Впечатления вместе — зоопарк, кино, торт с семьёй — часто ценнее вещей и укрепляют связь.</li>
-            <li>Хвалите за усилия и путь: «ты не опускаешь руки», «у тебя получилось разобраться», — даже если большая цель пока не достигнута.</li>
-          </ul>
-        </div>
         <div className="ge-reward-box">
           <span className="ge-reward-label"><Trophy size={16}/> Награда за большую цель — выберите вместе с ребёнком</span>
           <input value={reward} onChange={e => setReward(e.target.value)} placeholder="Например: велосипед" aria-label="Награда за большую цель"/>
@@ -121,6 +112,15 @@ function GoalEditor({initial, onSave, onCancel}) {
       <span className="ge-num">2</span>
       <div><b>Мини-цели на пути — и награда за каждую</b>
         <small>Система предлагает цели, которые может посчитать сама. Можно добавить свою.</small>
+        <div className="ge-tip">
+          <b><Lightbulb size={15}/> Подсказка: как наградам не перебить интерес к учёбе</b>
+          <ul>
+            <li>Награда — приятный бонус, а не «цена» за оценку. Иначе ребёнок начинает учиться ради подарка, а не ради «я понял».</li>
+            <li>Лучше работают мини-цели про старание: занятия, работа над ошибками, «объясни сам», — их ребёнок может выполнить своими силами.</li>
+            <li>Впечатления вместе — зоопарк, кино, торт с семьёй — часто ценнее вещей и укрепляют связь.</li>
+            <li>Хвалите за усилия и путь: «ты не опускаешь руки», «у тебя получилось разобраться», — даже если большая цель пока не достигнута.</li>
+          </ul>
+        </div>
         <div className="goal-ideas">{miniIdeas.map(i => <button type="button" key={i.title} className={has(i.title) ? 'on' : ''} disabled={has(i.title)} onClick={() => addMini(i.title, i.total)}>{has(i.title) ? <Check size={13}/> : <Plus size={13}/>} {i.title}</button>)}</div>
         <div className="ge-own">
           <input value={own} onChange={e => setOwn(e.target.value)} placeholder="Своя мини-цель" aria-label="Своя мини-цель"/>
