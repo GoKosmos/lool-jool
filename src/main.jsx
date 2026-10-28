@@ -5,6 +5,7 @@ import {Sloth, Monkey} from './Characters.jsx';
 import TutorDemo from './TutorDemo.jsx';
 import KnowledgePath from './KnowledgePath.jsx';
 import ExamPrep from './ExamPrep.jsx';
+import Cabinets from './Cabinets.jsx';
 import './style.css';
 
 const whales = [
@@ -58,6 +59,7 @@ function App() {
       <a className="lj-logo" href="#top" aria-label="Lool & Jool — наверх"><span>Lool</span><i>&amp;</i><span>Jool</span></a>
       <nav>
         <a href="#tutor">Репетитор</a>
+        <a href="#cabinet">Кабинеты</a>
         <a href="#parents">Родителям</a>
         <a href="#toys">Игрушки</a>
         <a href="#heart">Сердце</a>
@@ -145,6 +147,22 @@ function App() {
             </ol>
           </div>
           {format === 'homework' ? <TutorDemo/> : format === 'path' ? <KnowledgePath/> : <ExamPrep/>}
+        </div>
+      </section>
+
+      <section className="cabinets" id="cabinet">
+        <span className="pill">Личные кабинеты</span>
+        <h2 className="section-title">У ребёнка — свой мир, у родителя — спокойствие</h2>
+        <div className="cab-intro">
+          <div className="cab-intro-text">
+            <p>Один вход на всю семью — по почте родителя. Внутри — профиль каждого ребёнка и кабинет родителя.</p>
+            <ul className="how">
+              <li><span className="how-icon"><Sparkles size={20}/></span><div><b>Кабинет ребёнка</b><p>Свой герой, путь знаний, коллекция наклеек за старание и задания от родителя.</p></div></li>
+              <li><span className="how-icon"><Eye size={20}/></span><div><b>Кабинет родителя</b><p>Что сделано сегодня, за неделю и за месяц, резюме и советы. Вход по PIN-коду.</p></div></li>
+              <li><span className="how-icon"><Heart size={20}/></span><div><b>Честно с ребёнком</b><p>Ребёнок знает, что родитель видит его занятия, — чтобы радоваться вместе.</p></div></li>
+            </ul>
+          </div>
+          <Cabinets/>
         </div>
       </section>
 
